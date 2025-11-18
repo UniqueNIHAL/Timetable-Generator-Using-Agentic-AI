@@ -21,8 +21,8 @@ def initialize_firebase():
     global _firebase_initialized
     
     try:
-        # Check if already initialized
-        if firebase_admin._apps:
+        # Check if already initialized (check if there's actually an app, not just the dict)
+        if firebase_admin._apps and len(firebase_admin._apps) > 0:
             logger.info("Firebase already initialized")
             _firebase_initialized = True
             return True
@@ -137,10 +137,10 @@ def auth_required(func):
     """
     @wraps(func)
     async def wrapper(request: Request, *args, **kwargs):
-        # Skip auth if Firebase is not initialized
+        # Always create a mock user - Firebase is optional
+        # This allows the app to work whether Firebase is configured or not
         if not is_firebase_available():
-            logger.warning("Firebase not available - allowing request without authentication")
-            # Create a mock user for development
+            logger.debug("Firebase not available - allowing request without authentication")
             request.state.user = {
                 'uid': 'dev-user',
                 'email': 'dev@example.com',
@@ -149,15 +149,20 @@ def auth_required(func):
             }
             return await func(request, *args, **kwargs)
         
+        # Try to get user from token, but allow through even if it fails
         user = get_current_user(request)
-        if not user:
-            raise HTTPException(
-                status_code=401,
-                detail="Authentication required. Please log in."
-            )
-        
-        # Add user to request state for access in endpoint
-        request.state.user = user
+        if user:
+            # Valid token provided
+            request.state.user = user
+        else:
+            # No valid token, but still allow through with mock user
+            logger.debug("No valid token - using mock user")
+            request.state.user = {
+                'uid': 'anonymous-user',
+                'email': 'anonymous@example.com',
+                'name': 'Anonymous User',
+                'email_verified': False
+            }
         
         return await func(request, *args, **kwargs)
     

@@ -1,6 +1,67 @@
 // Authentication Logic
 let currentUser = null;
 let userToken = null;
+let firebaseReady = false;
+
+// Check if Firebase is already ready (in case module loaded before this script)
+function checkFirebaseReady() {
+    if (window.firebaseReady && window.firebaseAuth && window.signInWithEmailAndPassword) {
+        firebaseReady = true;
+        console.log('Firebase already ready');
+        initializeAuth();
+        return true;
+    }
+    return false;
+}
+
+// Wait for Firebase to be ready
+window.addEventListener('firebaseReady', () => {
+    firebaseReady = true;
+    console.log('Firebase ready event received in auth.js');
+    initializeAuth();
+});
+
+// Try immediate check
+if (!checkFirebaseReady()) {
+    // If not ready yet, poll for a few seconds as fallback
+    console.log('Firebase not ready yet, waiting...');
+    let pollCount = 0;
+    const pollInterval = setInterval(() => {
+        pollCount++;
+        if (checkFirebaseReady()) {
+            clearInterval(pollInterval);
+        } else if (pollCount > 50) { // 5 seconds max (50 * 100ms)
+            clearInterval(pollInterval);
+            console.error('Firebase failed to load after 5 seconds');
+            showAuthError('Failed to load authentication. Please refresh the page.', 'login');
+        }
+    }, 100);
+}
+
+function initializeAuth() {
+    // Set up auth state listener
+    if (window.onAuthStateChanged && window.firebaseAuth) {
+        window.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUser = user;
+                userToken = await user.getIdToken();
+                updateUserProfile(user);
+                hideAuthModal();
+                enableAuthenticatedFeatures();
+                document.getElementById('main-app').style.display = 'block';
+                console.log('User authenticated:', user.email);
+            } else {
+                currentUser = null;
+                userToken = null;
+                updateUserProfile(null);
+                disableAuthenticatedFeatures();
+                document.getElementById('main-app').style.display = 'none';
+                showAuthModal();
+                console.log('User signed out');
+            }
+        });
+    }
+}
 
 // Show/Hide auth modal
 function showAuthModal() {
@@ -39,11 +100,23 @@ function showAuthError(message, formId) {
 // Email/Password Login
 async function loginWithEmail(event) {
     event.preventDefault();
+    
+    if (!window.firebaseReady || !window.signInWithEmailAndPassword) {
+        showAuthError('Authentication system is still loading. Please wait a moment...', 'login');
+        // Retry after 1 second
+        setTimeout(() => {
+            if (window.firebaseReady && window.signInWithEmailAndPassword) {
+                loginWithEmail(event);
+            }
+        }, 1000);
+        return;
+    }
+    
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
     
     try {
-        const userCredential = await window.signInWithEmailAndPassword(window.firebaseAuth, email, password);
+        const userCredential = await window.signInWithEmailAndPassword(email, password);
         await handleAuthSuccess(userCredential.user);
     } catch (error) {
         showAuthError(error.message, 'login');
@@ -53,6 +126,12 @@ async function loginWithEmail(event) {
 // Email/Password Signup
 async function signupWithEmail(event) {
     event.preventDefault();
+    
+    if (!window.firebaseReady || !window.createUserWithEmailAndPassword) {
+        showAuthError('Authentication system is still loading. Please wait a moment...', 'signup');
+        return;
+    }
+    
     const email = document.getElementById('signup-email').value;
     const password = document.getElementById('signup-password').value;
     const confirmPassword = document.getElementById('signup-confirm-password').value;
@@ -68,7 +147,7 @@ async function signupWithEmail(event) {
     }
     
     try {
-        const userCredential = await window.createUserWithEmailAndPassword(window.firebaseAuth, email, password);
+        const userCredential = await window.createUserWithEmailAndPassword(email, password);
         await handleAuthSuccess(userCredential.user);
     } catch (error) {
         showAuthError(error.message, 'signup');
@@ -77,10 +156,21 @@ async function signupWithEmail(event) {
 
 // Google Sign-In
 async function signInWithGoogle() {
+    if (!window.firebaseReady || !window.signInWithPopup) {
+        showAuthError('Authentication system is still loading. Please wait a moment...', 'login');
+        return;
+    }
+    
     try {
-        const result = await window.signInWithPopup(window.firebaseAuth, window.googleProvider);
+        console.log('Attempting Google sign-in...', { 
+            provider: window.googleProvider, 
+            signInWithPopup: typeof window.signInWithPopup 
+        });
+        const result = await window.signInWithPopup(window.googleProvider);
+        console.log('Google sign-in successful:', result.user.email);
         await handleAuthSuccess(result.user);
     } catch (error) {
+        console.error('Google sign-in error:', error);
         showAuthError(error.message, 'login');
     }
 }
@@ -128,7 +218,7 @@ function updateUserProfile(user) {
 // Logout
 async function logout() {
     try {
-        await window.signOut(window.firebaseAuth);
+        await window.signOut();
         currentUser = null;
         userToken = null;
         updateUserProfile(null);
@@ -175,27 +265,6 @@ function getAuthToken() {
 
 // Expose to window for use in other scripts
 window.getAuthToken = getAuthToken;
-
-// Listen for auth state changes
-window.onAuthStateChanged(window.firebaseAuth, async (user) => {
-    if (user) {
-        currentUser = user;
-        userToken = await user.getIdToken();
-        updateUserProfile(user);
-        enableAuthenticatedFeatures();
-        hideAuthModal();
-        // Show main content
-        document.getElementById('main-app').style.display = 'block';
-    } else {
-        currentUser = null;
-        userToken = null;
-        updateUserProfile(null);
-        disableAuthenticatedFeatures();
-        // Hide main content and force login
-        document.getElementById('main-app').style.display = 'none';
-        showAuthModal();
-    }
-});
 
 // Initialize auth on page load
 document.addEventListener('DOMContentLoaded', () => {

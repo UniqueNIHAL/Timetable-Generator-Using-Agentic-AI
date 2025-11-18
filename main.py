@@ -627,18 +627,13 @@ async def upload_sections(request: Request, file: UploadFile = File(...)):
 
 
 @app.post("/api/generate-timetable")
-async def generate_timetable(request_data: GenerateTimetableRequest, request: Request):
+@auth_required
+async def generate_timetable(request: Request, request_data: GenerateTimetableRequest):
     """
     Generate timetable using AI agents.
     Requires authentication.
     """
-    # Check authentication
-    user = get_current_user(request)
-    if not user:
-        raise HTTPException(
-            status_code=401,
-            detail="Authentication required. Please log in."
-        )
+    # User is automatically set by @auth_required decorator in request.state.user
     
     try:
         

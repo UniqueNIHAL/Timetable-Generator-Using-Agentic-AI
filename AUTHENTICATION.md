@@ -100,7 +100,7 @@ COPY firebase-service-account.json /app/firebase-service-account.json
 ### Deploy with Environment Variables
 ```bash
 # Set environment variables
-export GEMINI_API_KEY=AIzaSyBn5rbdGJa86yp0HtBxTaBrUKxHkdE0VFw
+export GEMINI_API_KEY=
 export FIREBASE_SERVICE_ACCOUNT_PATH=/app/firebase-service-account.json
 
 # Build and deploy
