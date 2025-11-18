@@ -1,0 +1,11 @@
+id,name,code,department,credits,hours_per_week,lecture_type,requires_lab,is_elective
+CS101,Introduction to Programming,CS101,Computer Science,4,4,theory,false,false
+CS102,Data Structures,CS102,Computer Science,4,4,theory,true,false
+CS201,Algorithms,CS201,Computer Science,4,4,theory,false,false
+CS202,Database Systems,CS202,Computer Science,3,3,theory,true,false
+CS301,Operating Systems,CS301,Computer Science,4,4,theory,false,false
+CS302,Computer Networks,CS302,Computer Science,3,3,theory,true,false
+MATH101,Calculus I,MATH101,Mathematics,4,4,theory,false,false
+MATH201,Linear Algebra,MATH201,Mathematics,3,3,theory,false,false
+PHY101,Physics I,PHY101,Physics,4,4,theory,true,false
+ECE101,Digital Electronics,ECE101,Electronics,3,3,theory,true,false

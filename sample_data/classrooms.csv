@@ -1,0 +1,11 @@
+id,name,building,capacity,room_type,facilities
+R101,Room 101,Main Building,60,lecture_hall,projector;whiteboard;ac
+R102,Room 102,Main Building,60,lecture_hall,projector;whiteboard;ac
+R103,Room 103,Main Building,40,lecture_hall,projector;whiteboard
+R201,Room 201,Science Block,50,lecture_hall,projector;whiteboard;ac
+R202,Lab 202,Science Block,30,lab,computers;projector;ac
+R203,Lab 203,Science Block,30,lab,computers;projector;ac
+R301,Room 301,Tech Building,80,lecture_hall,projector;whiteboard;ac;sound_system
+R302,Room 302,Tech Building,60,lecture_hall,projector;whiteboard;ac
+LAB1,Computer Lab 1,Tech Building,40,lab,computers;projector;ac
+LAB2,Computer Lab 2,Tech Building,40,lab,computers;projector;ac

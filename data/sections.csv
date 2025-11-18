@@ -1,0 +1,7 @@
+id,name,program,year,semester,num_students,subjects
+SEC1,CSE-A,B.Tech Computer Science,2,3,55,"CS201,CS202,CS301,MATH201"
+SEC2,CSE-B,B.Tech Computer Science,2,3,58,"CS201,CS202,CS301,MATH201"
+SEC3,CSE-C,B.Tech Computer Science,1,1,60,"CS101,CS102,MATH101,PHY101"
+SEC4,CSE-D,B.Tech Computer Science,1,1,57,"CS101,CS102,MATH101,PHY101"
+SEC5,ECE-A,B.Tech Electronics,2,3,50,"ECE101,CS201,MATH201,PHY201"
+SEC6,ECE-B,B.Tech Electronics,1,1,52,"ECE101,CS101,MATH101,PHY101"

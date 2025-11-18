@@ -1,0 +1,9 @@
+id,name,email,department,subjects_can_teach,max_hours_per_week
+F001,Dr. John Smith,john.smith@university.edu,Computer Science,CS101;CS201;CS301,20
+F002,Dr. Sarah Johnson,sarah.johnson@university.edu,Computer Science,CS102;CS202;CS302,18
+F003,Dr. Michael Brown,michael.brown@university.edu,Mathematics,MATH101;MATH201,20
+F004,Dr. Emily Davis,emily.davis@university.edu,Physics,PHY101;PHY102,20
+F005,Dr. Robert Wilson,robert.wilson@university.edu,Computer Science,CS101;CS103;CS203,22
+F006,Dr. Lisa Anderson,lisa.anderson@university.edu,Electronics,ECE101;ECE201,20
+F007,Dr. James Taylor,james.taylor@university.edu,Computer Science,CS301;CS401,18
+F008,Dr. Maria Garcia,maria.garcia@university.edu,Mathematics,MATH101;MATH102,20
